@@ -1,4 +1,4 @@
-pub mod rpc_server;
+pub mod rpc;
 
 use std::collections::HashMap;
 

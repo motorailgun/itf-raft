@@ -11,7 +11,7 @@ pub trait Responder {
         leader_id: u64,
         prev_log_index: u64,
         prev_log_term: u64,
-        entry: KeyValue,
+        entry: Option<KeyValue>,
         leader_commit: u64,
     ) -> Option<u64>;
     async fn request_vote(
@@ -51,7 +51,7 @@ impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
             leader_commit,
         } = req.into_inner();
 
-        let res = self.responder.append_entries(term, leader_id, prev_log_index, prev_log_term, entry.unwrap(), leader_commit).await;
+        let res = self.responder.append_entries(term, leader_id, prev_log_index, prev_log_term, entry, leader_commit).await;
         match res {
             Some(term) => Ok(Response::new(AppendEntriesResponse {
                 term: Some(term),

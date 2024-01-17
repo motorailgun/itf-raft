@@ -11,7 +11,7 @@ message AppendEntriesRequest {
     uint64 leader_id = 2;
     uint64 prev_log_index = 3;
     uint64 prev_log_term = 4;
-    KeyValue entry = 5;
+    optional KeyValue entry = 5;
     uint64 leader_commit = 6;
 }
 
