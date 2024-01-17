@@ -1,5 +1,5 @@
 syntax = "proto3";
-package raft;
+package raft_rpc;
 
 message KeyValue {
     string key = 1;
@@ -11,13 +11,12 @@ message AppendEntriesRequest {
     uint64 leader_id = 2;
     uint64 prev_log_index = 3;
     uint64 prev_log_term = 4;
-    repeated KeyValue entry = 5;
+    KeyValue entry = 5;
     uint64 leader_commit = 6;
 }
 
 message AppendEntriesResponse {
-    uint64 term = 1;
-    bool success = 2;
+    optional uint64 term = 1;
 }
 
 message RequestVoteRequest {
@@ -32,7 +31,7 @@ message RequestVoteResponse {
     bool vote_granted = 2;
 }
 
-service Raft {
+service RaftService {
     rpc AppendEntries(AppendEntriesRequest) returns (AppendEntriesResponse);
     rpc RequestVote(RequestVoteRequest) returns (RequestVoteResponse);
 }
