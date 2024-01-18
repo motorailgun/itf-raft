@@ -1,4 +1,5 @@
 pub mod rpc;
+pub mod state;
 
 use std::collections::HashMap;
 
@@ -19,23 +20,6 @@ impl StateMachine {
     }
 }
 
-struct LogEntry {
-    key: String,
-    value: String,
-}
-
-enum NodeType {
-    Leader,
-    Follower,
-    Candidate,
-}
-
-struct NodeState {
-    node_type: NodeType,
-    state_machine: StateMachine,
-    log_queue: Vec<LogEntry>,
-    term: u64,
-}
 
 fn main() {
     println!("Hello, world!");
