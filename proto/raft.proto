@@ -1,9 +1,11 @@
 syntax = "proto3";
 package raft_rpc;
 
-message KeyValue {
+message LogEntry {
     string key = 1;
     string value = 2;
+    uint64 term = 3;
+    uint64 index = 4;
 }
 
 message AppendEntriesRequest {
@@ -11,7 +13,7 @@ message AppendEntriesRequest {
     uint64 leader_id = 2;
     uint64 prev_log_index = 3;
     uint64 prev_log_term = 4;
-    optional KeyValue entry = 5;
+    optional LogEntry entry = 5;
     uint64 leader_commit = 6;
 }
 

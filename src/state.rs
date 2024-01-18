@@ -1,4 +1,5 @@
 use std::collections::{HashMap, BTreeMap};
+use rand::{thread_rng, Rng};
 
 #[derive(Debug)]
 pub struct KeyValue {
@@ -26,6 +27,7 @@ pub enum NodeType {
 
 #[derive(Debug)]
 pub struct State {
+    pub id: u64,
     current_term: u64,
     pub voted_for: u64,
     log: Vec<KeyValue>,
@@ -37,6 +39,7 @@ pub struct State {
 impl State {
     pub fn new() -> State {
         State {
+            id: thread_rng().gen(),
             current_term: 0,
             voted_for: 0,
             log: Vec::new(),

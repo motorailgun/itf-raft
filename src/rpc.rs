@@ -11,7 +11,7 @@ pub trait Responder {
         leader_id: u64,
         prev_log_index: u64,
         prev_log_term: u64,
-        entry: Option<KeyValue>,
+        entry: Option<LogEntry>,
         leader_commit: u64,
     ) -> Option<u64>;
     async fn request_vote(
