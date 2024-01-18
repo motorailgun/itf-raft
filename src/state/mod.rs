@@ -32,12 +32,6 @@ pub enum NodeType {
 }
 
 #[derive(Debug)]
-enum Consequence {
-    NewState(State),
-    KeepCurrent,
-} 
-
-#[derive(Debug)]
 pub struct State {
     pub id: u64,
     current_term: u64,
