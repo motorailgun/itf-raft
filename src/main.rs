@@ -1,6 +1,5 @@
 pub mod rpc;
 pub mod state;
-pub mod node;
 
 use std::collections::HashMap;
 

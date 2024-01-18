@@ -5,10 +5,9 @@ use raft_rpc::*;
 
 use std::sync::{Arc, Mutex};
 
-#[tonic::async_trait]
 pub trait Responder {
     fn new() -> Self;
-    async fn append_entries(
+    fn append_entries(
         &self,
         term: u64,
         leader_id: u64,
@@ -17,7 +16,7 @@ pub trait Responder {
         entry: Option<LogEntry>,
         leader_commit: u64,
     ) -> Option<u64>;
-    async fn request_vote(
+    fn request_vote(
         &self,
         term: u64,
         candidate_id: u64,
@@ -54,7 +53,7 @@ impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
             leader_commit,
         } = req.into_inner();
 
-        let res = self.inner.lock().unwrap().append_entries(term, leader_id, prev_log_index, prev_log_term, entry, leader_commit).await;
+        let res = self.inner.lock().unwrap().append_entries(term, leader_id, prev_log_index, prev_log_term, entry, leader_commit);
         match res {
             Some(term) => Ok(Response::new(AppendEntriesResponse {
                 term: Some(term),
@@ -73,7 +72,7 @@ impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
             last_log_term,
         } = req.into_inner();
 
-        let (term, vote_granted) = self.inner.lock().unwrap().request_vote(term, candidate_id, last_log_index, last_log_term).await;
+        let (term, vote_granted) = self.inner.lock().unwrap().request_vote(term, candidate_id, last_log_index, last_log_term);
         Ok(Response::new(RequestVoteResponse {
             term,
             vote_granted,
