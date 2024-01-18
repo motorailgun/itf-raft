@@ -1,4 +1,3 @@
-use std::collections::{HashMap, BTreeMap};
 use rand::{thread_rng, Rng};
 
 use crate::rpc::Responder;
@@ -11,17 +10,6 @@ mod candidate;
 pub struct KeyValue {
     pub key: String,
     pub value: String,
-}
-
-#[derive(Debug)]
-pub struct LeaderState {
-    pub next_index: HashMap<u64, u64>,
-    pub match_index: HashMap<u64, u64>,
-}
-
-#[derive(Debug)]
-pub struct CandidateState {
-    pub votes: BTreeMap<u64, ()>,
 }
 
 #[derive(Debug)]
@@ -72,7 +60,7 @@ impl Responder for State {
     }
 
     fn append_entries(
-        &self,
+        &mut self,
         term: u64,
         leader_id: u64,
         prev_log_index: u64,
@@ -84,7 +72,7 @@ impl Responder for State {
     }
 
     fn request_vote(
-        &self,
+        &mut self,
         term: u64,
         candidate_id: u64,
         last_log_index: u64,

@@ -8,7 +8,7 @@ use std::sync::{Arc, Mutex};
 pub trait Responder {
     fn new() -> Self;
     fn append_entries(
-        &self,
+        &mut self,
         term: u64,
         leader_id: u64,
         prev_log_index: u64,
@@ -17,7 +17,7 @@ pub trait Responder {
         leader_commit: u64,
     ) -> Option<u64>;
     fn request_vote(
-        &self,
+        &mut self,
         term: u64,
         candidate_id: u64,
         last_log_index: u64,
