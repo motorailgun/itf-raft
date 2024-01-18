@@ -3,8 +3,11 @@ use tonic::{Request, Response, Status};
 use raft_rpc::raft_service_server::RaftService;
 use raft_rpc::*;
 
+use std::sync::{Arc, Mutex};
+
 #[tonic::async_trait]
 pub trait Responder {
+    fn new() -> Self;
     async fn append_entries(
         &self,
         term: u64,
@@ -23,18 +26,18 @@ pub trait Responder {
     ) -> (u64, bool);
 }
 
-pub struct RaftRpcServer<T: Responder + Sync + Send> {
-    responder: T,
+pub struct RaftRpcServer<T: Responder> {
+    inner: Arc<Mutex<T>>,
 }
 
 pub mod raft_rpc {
     tonic::include_proto!("raft_rpc");
 }
 
-impl<T: Responder + Sync + Send> RaftRpcServer<T> {
-    pub fn new(responder: T) -> RaftRpcServer<T> {
+impl<T: Responder> RaftRpcServer<T> {
+    pub fn new() -> RaftRpcServer<T> {
         RaftRpcServer {
-            responder,
+            inner: Arc::new(Mutex::new(T::new())),
         }
     }
 }
@@ -51,7 +54,7 @@ impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
             leader_commit,
         } = req.into_inner();
 
-        let res = self.responder.append_entries(term, leader_id, prev_log_index, prev_log_term, entry, leader_commit).await;
+        let res = self.inner.lock().unwrap().append_entries(term, leader_id, prev_log_index, prev_log_term, entry, leader_commit).await;
         match res {
             Some(term) => Ok(Response::new(AppendEntriesResponse {
                 term: Some(term),
@@ -70,7 +73,7 @@ impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
             last_log_term,
         } = req.into_inner();
 
-        let (term, vote_granted) = self.responder.request_vote(term, candidate_id, last_log_index, last_log_term).await;
+        let (term, vote_granted) = self.inner.lock().unwrap().request_vote(term, candidate_id, last_log_index, last_log_term).await;
         Ok(Response::new(RequestVoteResponse {
             term,
             vote_granted,
