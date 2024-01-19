@@ -1,5 +1,3 @@
-use rand::{thread_rng, Rng};
-
 use crate::rpc::Responder;
 use crate::rpc::raft_rpc::LogEntry;
 

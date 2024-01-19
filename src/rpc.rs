@@ -41,6 +41,12 @@ impl<T: Responder> RaftRpcServer<T> {
     }
 }
 
+impl<T: Responder + Sync + Send + 'static> RaftRpcServer<T> {
+    fn let_me_borrow_your_inner(&self) -> Arc<Mutex<T>> {
+        self.inner.clone()
+    }
+}
+
 #[tonic::async_trait]
 impl<T: Responder + Sync + Send + 'static> RaftService for RaftRpcServer<T> {
     async fn append_entries(&self, req: Request<AppendEntriesRequest>) -> Result<Response<AppendEntriesResponse>, Status> {
