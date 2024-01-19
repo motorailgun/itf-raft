@@ -12,6 +12,7 @@ pub enum NodeType {
     Follower(follower::FollowerState),
     Candidate(candidate::CandidateState),
 }
+use NodeType::*;
 
 #[derive(Debug)]
 pub struct State {
@@ -34,8 +35,14 @@ impl Responder for State {
         entry: Option<LogEntry>,
         leader_commit: u64,
     ) -> (u64, bool) {
-        match self.inner {
-            
+        let mut inner = self.inner;
+        match &self.inner {
+            Follower(state) => {
+                let (new_inner, new_term, success) = state.append_entries(term, prev_log_index, prev_log_term, entry);
+                self.inner = new_inner;
+                
+                (new_term, success)
+            },
             _ => unimplemented!(),
         }
     }
