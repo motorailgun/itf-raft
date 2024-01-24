@@ -46,6 +46,10 @@ impl InnerState {
         self.id
     }
 
+    pub fn last_log_index(&self) -> u64 {
+        (self.log.len() - 1) as u64
+    }
+
     fn acceptable_log(&self, entry: &LogEntry) -> Result<(), LogAcceptanceError> {
         let &LogEntry {
             prev_index, prev_term, term, ..
