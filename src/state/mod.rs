@@ -6,6 +6,8 @@ mod candidate;
 mod follower;
 mod inner_state;
 
+use self::inner_state::InnerState;
+
 #[derive(Debug)]
 pub enum NodeType {
     Leader(leader::LeaderState),
@@ -16,13 +18,15 @@ use NodeType::*;
 
 #[derive(Debug)]
 pub struct State {
-    inner: NodeType,
+    node_type: NodeType,
+    inner: InnerState
 }
 
 impl Responder for State {
     fn new() -> State {
         State {
-            inner: NodeType::Follower(follower::FollowerState::new()),
+            node_type: NodeType::Follower(follower::FollowerState::new()),
+            inner: InnerState::init(),
         }
     }
 
@@ -35,11 +39,10 @@ impl Responder for State {
         entry: Option<LogEntry>,
         leader_commit: u64,
     ) -> (u64, bool) {
-        let mut inner = self.inner;
-        match &self.inner {
+        match &mut self.node_type {
             Follower(state) => {
-                let (new_inner, new_term, success) = state.append_entries(term, prev_log_index, prev_log_term, entry);
-                self.inner = new_inner;
+                let (new_type, new_term, success) = state.append_entries(&mut self.inner, entry, term);
+                self.node_type = new_type;
                 
                 (new_term, success)
             },
